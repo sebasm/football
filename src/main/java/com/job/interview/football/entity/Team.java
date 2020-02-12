@@ -2,19 +2,41 @@ package com.job.interview.football.entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+
+@Entity
 public class Team {
 	
-	String name;
-	String tla;
-	String shortName;
-	String areaName;
-	String email;
-	List<Player> players;
-	
-	
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Long id;
+	private String name;
+	private String tla;
+	private String shortName;
+	private String areaName;
+	private String email;
+	@ManyToMany(mappedBy = "teams")
+	private List<Competition> competitions;
+	@OneToMany(cascade=CascadeType.ALL)
+	@JoinColumn(name="team_id")
+	private List<Player> players;
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getName() {
 		return name;
 	}
@@ -45,11 +67,19 @@ public class Team {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	public List<Competition> getCompetitions() {
+		return competitions;
+	}
+	public void setCompetitions(List<Competition> competitions) {
+		this.competitions = competitions;
+	}
 	public List<Player> getPlayers() {
 		return players;
 	}
 	public void setPlayers(List<Player> players) {
 		this.players = players;
 	}
+	
+	
 	
 }

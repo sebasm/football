@@ -2,17 +2,38 @@ package com.job.interview.football.entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Entity
 public class Competition {
 
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	Long id;
 	String name;
 	String code;
 	String areaName;
+	
+	@ManyToMany(cascade=CascadeType.ALL)
+	@JoinTable(
+			name="competition_team", 
+			joinColumns = { @JoinColumn(name = "competition_id")},
+			inverseJoinColumns = { @JoinColumn(name = "team_id")})
 	List<Team> teams;
 	
-	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getName() {
 		return name;
 	}
