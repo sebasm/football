@@ -16,12 +16,15 @@ import com.job.interview.football.api.mapper.FootballMapper;
 import com.job.interview.football.entity.Competition;
 import com.job.interview.football.entity.Player;
 import com.job.interview.football.entity.Team;
-import com.job.interview.football.exception.LeagueNotFoundException;
+import com.job.interview.football.exception.LeagueAlreadyImportedException;
+import com.job.interview.football.exception.ResourceNotFoundException;
 import com.job.interview.football.repository.CompetitionRepository;
 
 @Service
 public class LeagueService {
 	
+	private static final int DELAY_TIME = 7001;
+
 	@Autowired
 	FootballAPI footballAPI;
 	
@@ -31,46 +34,36 @@ public class LeagueService {
 	@Autowired
 	CompetitionRepository competitionRepository;
 	
+	
 	public void importLeague(String leagueCode) {
 		
-		CompetitionDTO competitionDTO = null;
-		try {
-			competitionDTO = footballAPI.getCompetition(leagueCode);
-			if(competitionDTO == null) {
-				throw new LeagueNotFoundException("asd");
-			}
-		} catch (Exception e) {
+		
+		if(competitionRepository.findByCode(leagueCode).isPresent()) {
+			throw new LeagueAlreadyImportedException("League already imported.");
 		}
 		
+		CompetitionDTO competitionDTO = footballAPI.getCompetition(leagueCode);
 		Competition competition = footballMapper.map(competitionDTO);
 		
+		TeamResultDTO teamResultDTO = footballAPI.getTeamsByLeague(leagueCode);
+		List<Team> teams = teamResultDTO.getTeams().stream().map(footballMapper::map).collect(Collectors.toList());
 		
-		
-		TeamResultDTO trdto = footballAPI.getTeamsByLeague(leagueCode);
-		
-		List<Team> teams = trdto.getTeams().stream().map(footballMapper::map).collect(Collectors.toList());
-		
-		List<Team> temp = new ArrayList<Team>();
-		temp.add(teams.get(0));
-		temp.add(teams.get(1));
-		
-		for (Team team : temp) {
+		// this should be refactored depending of the API max request limitation solution
+		for (Team team : teams) {
 			TeamDTO teamDTO = footballAPI.getTeamById(team.getId());
 			List<Player> players = teamDTO.getSquad().stream().map(footballMapper::map).collect(Collectors.toList());
 			team.setPlayers(players);
 			System.out.println("Importing " + team.getName());
 			try {
-				Thread.sleep(6001);
+				Thread.sleep(DELAY_TIME);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new RuntimeException("Error handling API delay interruption", e);
 			}
 		}
 		
 		competition.setTeams(teams);
 		
 		competitionRepository.save(competition);
-
 		
 	}
 

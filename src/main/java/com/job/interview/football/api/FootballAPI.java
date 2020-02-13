@@ -17,7 +17,10 @@ import com.job.interview.football.api.dto.CompetitionDTO;
 import com.job.interview.football.api.dto.PlayerDTO;
 import com.job.interview.football.api.dto.TeamDTO;
 import com.job.interview.football.api.dto.TeamResultDTO;
+import com.job.interview.football.api.resttemplate.FootballRestTemplate;
 import com.job.interview.football.entity.Competition;
+import com.job.interview.football.exception.FootballAPIException;
+import com.job.interview.football.exception.ResourceNotFoundException;
 
 @Component
 public class FootballAPI {
@@ -31,51 +34,40 @@ public class FootballAPI {
 	@Value("${api.football.token}")
 	private String token;
 
-	public CompetitionDTO getCompetition(String leagueCode) {
+	public CompetitionDTO getCompetition(String leagueCode) throws ResourceNotFoundException {
 
 		String competitionsURL = url + "/competitions/" + leagueCode;
 
 		ResponseEntity<CompetitionDTO> response = restTemplate.exchange(competitionsURL, HttpMethod.GET,
-				new HttpEntity<CompetitionDTO>(createHeaders()),
-				new ParameterizedTypeReference<CompetitionDTO>() {
+				new HttpEntity<CompetitionDTO>(createHeaders()), new ParameterizedTypeReference<CompetitionDTO>() {
 				});
-		if(response.getStatusCode() == HttpStatus.NOT_FOUND) {
-			
-		}
-		else if(response.getStatusCode().is5xxServerError()) {
-			
-		}{
-			
-		}
-		CompetitionDTO data = response.getBody();
-		return data;
+
+		return response.getBody();
 	}
-	
+
 	public TeamResultDTO getTeamsByLeague(String league) {
-		
+
 		String teamsURL = url + "/competitions/" + league + "/teams";
-		
+
 		ResponseEntity<TeamResultDTO> response = restTemplate.exchange(teamsURL, HttpMethod.GET,
-				new HttpEntity<TeamResultDTO>(createHeaders()),
-				new ParameterizedTypeReference<TeamResultDTO>() {
+				new HttpEntity<TeamResultDTO>(createHeaders()), new ParameterizedTypeReference<TeamResultDTO>() {
 				});
-		
+
 		TeamResultDTO trdto = response.getBody();
-		
+
 		return trdto;
 	}
-	
+
 	public TeamDTO getTeamById(Long teamId) {
-		
+
 		String teamsURL = url + "/teams/" + teamId;
-		
+
 		ResponseEntity<TeamDTO> response = restTemplate.exchange(teamsURL, HttpMethod.GET,
-				new HttpEntity<TeamDTO>(createHeaders()),
-				new ParameterizedTypeReference<TeamDTO>() {
+				new HttpEntity<TeamDTO>(createHeaders()), new ParameterizedTypeReference<TeamDTO>() {
 				});
-		
+
 		TeamDTO team = response.getBody();
-		
+
 		return team;
 	}
 

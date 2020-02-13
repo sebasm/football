@@ -1,5 +1,7 @@
 package com.job.interview.football.controller;
 
+import java.util.AbstractMap.SimpleEntry;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,8 +23,8 @@ public class PlayerController {
 	@RequestMapping(value = "/{leagueCode}", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
 	public String importLeague(@PathVariable(required=true) String leagueCode) {
-		
-		String response = playerService.countPlayersByLeague(leagueCode).toString();
+		Long players = playerService.countPlayersByLeague(leagueCode);
+		String response = "{ total : " + players + "}";
 		return response;
 		
 	}
