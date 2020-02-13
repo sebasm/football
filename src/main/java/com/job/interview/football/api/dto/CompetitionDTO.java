@@ -14,10 +14,12 @@ public class CompetitionDTO {
 	
 	String name;
 	String code;
-	
-	
 	String areaName;
 	
+	@JsonProperty("area")
+	private void unpackNested(Map<String, String> area) {
+		this.areaName = area.get("name");
+	}
 	
 	public Long getId() {
 		return id;
@@ -45,10 +47,7 @@ public class CompetitionDTO {
 	}
 	
 	
-	@JsonProperty("area")
-	private void unpackNested(Map<String, String> area) {
-		this.areaName = area.get("name");
-	}
+	
 	
 	
 

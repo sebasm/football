@@ -1,6 +1,9 @@
 package com.job.interview.football.api.dto;
 
 import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TeamDTO {
 	
@@ -12,6 +15,10 @@ public class TeamDTO {
 	String email;
 	List<PlayerDTO> squad;
 	
+	@JsonProperty("area")
+	private void unpackNested(Map<String, String> area) {
+		this.areaName = area.get("name");
+	}
 	
 	public String getId() {
 		return id;
@@ -55,6 +62,7 @@ public class TeamDTO {
 	public void setSquad(List<PlayerDTO> squad) {
 		this.squad = squad;
 	}
+	
 	
 
 }
